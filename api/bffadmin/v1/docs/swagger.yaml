@@ -1,0 +1,248 @@
+definitions:
+  anypb.Any:
+    properties:
+      type_url:
+        description: |-
+          A URL/resource name that uniquely identifies the type of the serialized
+          protocol buffer message. This string must contain at least
+          one "/" character. The last segment of the URL's path must represent
+          the fully qualified name of the type (as in
+          `path/google.protobuf.Duration`). The name should be in a canonical form
+          (e.g., leading "." is not accepted).
+
+          In practice, teams usually precompile into the binary all types that they
+          expect it to use in the context of Any. However, for URLs which use the
+          scheme `http`, `https`, or no scheme, one can optionally set up a type
+          server that maps type URLs to message definitions as follows:
+
+          * If no scheme is provided, `https` is assumed.
+          * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+            value in binary format, or produce an error.
+          * Applications are allowed to cache lookup results based on the
+            URL, or have them precompiled into a binary to avoid any
+            lookup. Therefore, binary compatibility needs to be preserved
+            on changes to types. (Use versioned type names to manage
+            breaking changes.)
+
+          Note: this functionality is not currently available in the official
+          protobuf release, and it is not used for type URLs beginning with
+          type.googleapis.com.
+
+          Schemes other than `http`, `https` (or the empty scheme) might be
+          used with implementation specific semantics.
+        type: string
+      value:
+        description: Must be a valid serialized protocol buffer of the above specified
+          type.
+        items:
+          type: integer
+        type: array
+    type: object
+  common.CommonCreate:
+    properties:
+      createdAt:
+        $ref: '#/definitions/timestamppb.Timestamp'
+      id:
+        type: string
+      updatedAt:
+        $ref: '#/definitions/timestamppb.Timestamp'
+    type: object
+  common.CommonDeletesRequest:
+    properties:
+      ids:
+        items:
+          type: string
+        type: array
+    type: object
+  common.CommonUpdate:
+    properties:
+      id:
+        type: string
+      updatedAt:
+        $ref: '#/definitions/timestamppb.Timestamp'
+    type: object
+  common.PagingResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/anypb.Any'
+        type: array
+      total:
+        type: integer
+    type: object
+  timestamppb.Timestamp:
+    properties:
+      nanos:
+        description: |-
+          Non-negative fractions of a second at nanosecond resolution. Negative
+          second values with fractions must still have non-negative nanos values
+          that count forward in time. Must be from 0 to 999,999,999
+          inclusive.
+        type: integer
+      seconds:
+        description: |-
+          Represents seconds of UTC time since Unix epoch
+          1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+          9999-12-31T23:59:59Z inclusive.
+        type: integer
+    type: object
+  v1.CreateRoleRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  v1.Role:
+    properties:
+      id:
+        type: string
+      isSystem:
+        type: boolean
+    type: object
+  v1.UpdateRoleRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 本文档描述了后台管理系统微服务接口定义。
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Nicehouse (好房) 后台管理系统 API
+  version: "1.0"
+paths:
+  /admin/roles:
+    delete:
+      consumes:
+      - application/json
+      description: 通过接收数组 ids json body 参数来删除角色
+      parameters:
+      - description: 角色 ids 数组
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/common.CommonDeletesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: 删除一个或多个角色
+      tags:
+      - 删除角色
+    get:
+      consumes:
+      - application/json
+      description: 角色管理分页列表
+      parameters:
+      - description: 页码
+        format: uint32
+        in: query
+        name: page
+        type: integer
+      - description: 每页条目数
+        format: uint32
+        in: query
+        name: pageSize
+        type: integer
+      - description: 查询参数
+        in: query
+        name: query[name]
+        type: string
+      - description: 排序参数
+        enum:
+        - 0
+        - 1
+        in: query
+        name: orderBy[id]
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.PagingResponse'
+      summary: 角色列表
+      tags:
+      - 获取角色管理列表
+    post:
+      consumes:
+      - application/json
+      description: 通过接收 json body 参数来添加角色
+      parameters:
+      - description: 角色属性
+        in: body
+        name: message
+        schema:
+          $ref: '#/definitions/v1.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.CommonCreate'
+      summary: 添加角色
+      tags:
+      - 添加角色
+  /admin/roles/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过接收 id 参数来获取一个角色
+      parameters:
+      - description: 角色 id
+        in: path
+        maxLength: 26
+        minLength: 26
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.Role'
+      summary: 获取一个角色
+      tags:
+      - 获取一个角色
+    put:
+      consumes:
+      - application/json
+      description: 通过接收 id 参数和 json body 参数来编辑一个角色
+      parameters:
+      - description: 角色 id
+        in: path
+        maxLength: 26
+        minLength: 26
+        name: id
+        required: true
+        type: string
+      - description: 角色属性
+        in: body
+        name: message
+        schema:
+          $ref: '#/definitions/v1.UpdateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.CommonUpdate'
+      summary: 编辑一个角色
+      tags:
+      - 编辑一个角色
+swagger: "2.0"

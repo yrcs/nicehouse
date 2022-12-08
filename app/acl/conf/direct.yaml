@@ -1,0 +1,19 @@
+dubbo:
+  custom:
+    config-map:
+      database: # Database driver
+        dialect: mysql
+        source: root:123456@tcp(127.0.0.1:3306)/nicehouse?charset=utf8mb4&parseTime=True&loc=Local
+        connection-pool:
+          max_idle_conns: 10
+          max_open_conns: 100
+          max_idle_time: 10 # minutes
+          max_life_time: 60 # minutes
+  protocols:
+    triple:
+      name: "tri"
+      port: 20000
+  provider:
+    services:
+      ACLProvider:
+        interface: "" # read interface from pb

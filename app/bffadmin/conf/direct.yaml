@@ -1,0 +1,12 @@
+dubbo:
+  custom:
+    config-map:
+      server: # Web Service
+        host: 0.0.0.0
+        port: 8080
+  consumer:
+    references:
+      ACLClientImpl:
+        protocol: tri
+        url: tri://localhost:20000
+        filter: validator

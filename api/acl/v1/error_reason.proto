@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package yrcs.nicehouse.api.acl.v1;
+
+option go_package = "github.com/yrcs/nicehouse/api/acl/v1;v1";
+option java_multiple_files = true;
+option java_package = "com.yrcs.nicehouse.api.acl.v1";
+option java_outer_classname = "ErrorReasonProto";
+
+enum ErrorReason {
+  ACL_ROLE_INVALID_ARGUMENT=0;
+  ACL_ROLE_NOT_FOUND = 1;
+  ACL_ROLE_UNPROCESSABLE_ENTITY = 2;
+}

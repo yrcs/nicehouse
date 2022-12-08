@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package yrcs.nicehouse.api.bffadmin.v1;
+
+option go_package = "github.com/yrcs/nicehouse/api/bffadmin/v1;v1";
+option java_multiple_files = true;
+option java_package = "com.yrcs.nicehouse.api.bffadmin.v1";
+option java_outer_classname = "BFFAdminProto";
+
+import "google/protobuf/empty.proto";
+import "common/common.proto";
+
+service BFFAdmin {
+  rpc ListRoles(common.PagingRequest) returns (common.PagingResponse);
+  rpc GetRole(GetRoleRequest) returns (Role);
+  rpc CreateRole(CreateRoleRequest) returns (common.CommonCreate);
+  rpc UpdateRole(UpdateRoleRequest) returns (common.CommonUpdate);
+  rpc DeleteRoles(common.CommonDeletesRequest) returns (google.protobuf.Empty);
+}
+
+message Role {
+  string id = 1;
+  bool isSystem = 2;
+}
+
+message GetRoleRequest {
+  string id = 1;
+}
+
+message CreateRoleRequest {
+  string name = 1;
+  optional string description = 2;
+}
+
+message UpdateRoleRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+}

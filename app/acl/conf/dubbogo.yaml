@@ -1,0 +1,39 @@
+dubbo:
+  config-center:
+    protocol: nacos
+    address: 192.168.23.2:8848
+    data-id: nicehouse-acl-server
+    group: nicehouse-acl # nacos group, default is DEFAULT_GROUP
+    namespace: 5c914958-e9bc-41e9-9498-39021d1a630d    # nacos namespaceID (namespace is dev), default is public namespace
+
+## set in config center, group is 'nicehouse-acl', dataid is 'nicehouse-acl-server', namespace is dev
+#dubbo:
+#  custom:
+#    config-map:
+#      database: # Database driver
+#        dialect: mysql
+#        source: root:123456@tcp(127.0.0.1:3306)/nicehouse?charset=utf8mb4&parseTime=True&loc=Local
+#        connection-pool:
+#          max_idle_conns: 10
+#          max_open_conns: 100
+#          max_idle_time: 10 # minutes
+#          max_life_time: 60 # minutes
+#  registries:
+#    nacos:
+#      protocol: nacos
+#      timeout: 3s
+#      address: 192.168.23.2:8848
+#      registry-type: service
+#      group: nicehouse-acl # nacos group, default is DEFAULT_GROUP
+#      namespace: 5c914958-e9bc-41e9-9498-39021d1a630d # nacos namespaceID, should be created before. default is public
+#  metadata-report:
+#    protocol: nacos
+#    address: 192.168.23.2:8848
+#  protocols:
+#    triple:
+#      name: "tri"
+#      port: 20000
+#  provider:
+#    services:
+#      ACLProvider:
+#        interface: "" # read interface from pb

@@ -1,0 +1,31 @@
+dubbo:
+  config-center:
+    protocol: nacos
+    address: 192.168.23.2:8848
+    data-id: nicehouse-acl-client
+    group: nicehouse-acl # nacos group, default is DEFAULT_GROUP
+    namespace: 5c914958-e9bc-41e9-9498-39021d1a630d    # nacos namespaceID (namespace is dev), default is public namespace
+
+## set in config center, group is 'nicehouse-acl', dataid is 'nicehouse-acl-client', namespace is dev
+#dubbo:
+#  custom:
+#    config-map:
+#      server: # Web Service
+#        host: 0.0.0.0
+#        port: 8080
+#  registries:
+#    nacos:
+#      protocol: nacos
+#      timeout: 3s
+#      address: 192.168.23.2:8848
+#      registry-type: service
+#      group: nicehouse-acl # default is DEFAULT_GROUP
+#      namespace: 5c914958-e9bc-41e9-9498-39021d1a630d # default is public
+#  metadata-report:
+#    protocol: nacos
+#    address: 192.168.23.2:8848
+#  consumer:
+#    references:
+#      ACLClientImpl:
+#        protocol: tri
+#        filter: validator

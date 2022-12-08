@@ -1,0 +1,89 @@
+VERSION:=v1
+APP_NAME:=$(shell basename $$PWD)
+IMAGE:=registry.cn-guangzhou.aliyuncs.com/yrcs/metashop-${APP_NAME}
+TAG:=1.0.0
+
+# the Windows `find.exe` is different from `find` in Linux bash/shell.
+# to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
+# changed to use /usr/bin/find (inside Cygwin64) to run find cli.
+
+PROTO_FILES:=$(shell cd ../../api/${APP_NAME} && /usr/bin/find . -name *.proto)
+
+.PHONY: init
+# init env
+init:
+	go install github.com/dubbogo/dubbogo-cli@latest
+	go install github.com/envoyproxy/protoc-gen-validate@latest
+	go install github.com/google/wire/cmd/wire@latest
+	go install github.com/swaggo/swag/cmd/swag
+	dubbogo-cli install all
+
+.PHONY: proto-gen
+# generate *.pb.go from *.proto
+proto-gen:
+	cd ../../api/${APP_NAME} && protoc --proto_path=. \
+	--proto_path=../../third_party \
+	--go_out=paths=source_relative:. \
+	--validate_out=paths=source_relative,lang=go:. \
+	--go-triple_out=paths=source_relative:. \
+	${PROTO_FILES}
+
+.PHONY: swag-gen
+# generate swagger docs
+swag-gen:
+	swag fmt -d cmd,../../api/${APP_NAME}/${VERSION} -g app.go
+	swag init -d cmd,../../api/${APP_NAME}/${VERSION} -g app.go --pd -o ../../api/${APP_NAME}/${VERSION}/docs
+
+.PHONY: clean
+# clean
+clean:
+	rm ./build/dubbogo.yaml
+	rm ./build/app*
+
+.PHONY: tidy
+# tidy
+tidy:
+	go mod tidy
+
+.PHONY: wire
+# generate wire_gen.go
+wire:
+	cd cmd && wire
+
+.PHONY: test
+# test
+test:
+	go test -v ./... -cover
+
+.PHONY: build-amd64-app
+# build-amd64-app
+build-amd64-app:
+	GOOS=linux GOARCH=amd64 go build -o build/app ./cmd
+# GOOS=linux GOARCH=loong64 go build -o build/app ./cmd
+
+.PHONY: build
+# build app and container image
+build-image: proto-gen tidy build-amd64-app
+	cp ./conf/dubbogo.yaml ./build/dubbogo.yaml
+	nerdctl build ./build -t ${IMAGE}:${TAG}
+	nerdctl push ${IMAGE}:${TAG}
+	make clean
+
+# show help
+help:
+	@echo ''
+	@echo 'Usage:'
+	@echo ' make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@awk '/^[a-zA-Z\-_0-9]+:/ { \
+	helpMessage = match(lastLine, /^# (.*)/); \
+		if (helpMessage) { \
+			helpCommand = substr($$1, 0, index($$1, ":")-1); \
+			helpMessage = substr(lastLine, RSTART + 2, RLENGTH); \
+			printf "\033[36m%-22s\033[0m %s\n", helpCommand,helpMessage; \
+		} \
+	} \
+	{ lastLine = $$0 }' ${MAKEFILE_LIST}
+
+.DEFAULT_GOAL := help
