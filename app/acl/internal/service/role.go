@@ -54,6 +54,7 @@ func (s *ACLProvider) ListRoles(ctx context.Context, in *common.PagingRequest) (
 		isSystem, err := strconv.ParseBool(v.(string))
 		if err != nil {
 			return nil, util.StatusWithDetails(
+				ctx,
 				biz.ErrRoleInvalidArgument,
 				v1.ErrorReason_ACL_ROLE_INVALID_ARGUMENT.String(),
 				err)
@@ -62,7 +63,7 @@ func (s *ACLProvider) ListRoles(ctx context.Context, in *common.PagingRequest) (
 	}
 	roles, total, err = s.rc.List(ctx, offset, limit, queryCopy, orderBy)
 	if err != nil {
-		return nil, err
+		return nil, util.StatusError(ctx, err)
 	}
 	items := make([]*anypb.Any, 0, len(roles))
 	for _, r := range roles {
@@ -88,14 +89,16 @@ func (s *ACLProvider) GetRole(ctx context.Context, in *v1.GetRoleRequest) (*v1.R
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, util.StatusWithDetails(
+				ctx,
 				biz.ErrRoleNotFound,
 				v1.ErrorReason_ACL_ROLE_NOT_FOUND.String(),
 				err)
 		}
-		return nil, err
+		return nil, util.StatusError(ctx, err)
 	}
 	if out.IsSystem {
 		return nil, util.StatusWithDetails(
+			ctx,
 			biz.ErrRoleUnprocessableEntity,
 			v1.ErrorReason_ACL_ROLE_UNPROCESSABLE_ENTITY.String(),
 			err)
@@ -109,7 +112,7 @@ func (s *ACLProvider) GetRole(ctx context.Context, in *v1.GetRoleRequest) (*v1.R
 func (s *ACLProvider) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) (*common.CommonCreate, error) {
 	id, err := util.MakeULID()
 	if err != nil {
-		return nil, err
+		return nil, util.StatusError(ctx, err)
 	}
 	out, err := s.rc.Create(ctx, &do.Role{
 		Id:          id,
@@ -117,7 +120,7 @@ func (s *ACLProvider) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) 
 		Description: in.GetDescription(),
 	})
 	if err != nil {
-		return nil, err
+		return nil, util.StatusError(ctx, err)
 	}
 	return &common.CommonCreate{
 		Id:        out.Id,
@@ -131,7 +134,7 @@ func (s *ACLProvider) UpdateRole(ctx context.Context, in *v1.UpdateRoleRequest) 
 	util.UpdateOptionalFields(in, values)
 	out, err := s.rc.Update(ctx, values)
 	if err != nil {
-		return nil, err
+		return nil, util.StatusError(ctx, err)
 	}
 	return &common.CommonUpdate{
 		Id:        out.Id,
@@ -144,7 +147,7 @@ func (s *ACLProvider) DeleteRoles(ctx context.Context, in *common.CommonDeletesR
 		return nil, nil
 	}
 	if err := s.rc.Delete(ctx, in.Ids, "IsSystem = ?", false); err != nil {
-		return nil, err
+		return nil, util.StatusError(ctx, err)
 	}
 	return nil, nil
 }
