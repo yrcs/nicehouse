@@ -20,6 +20,7 @@ import (
 	v1 "github.com/yrcs/nicehouse/api/acl/v1"
 	"github.com/yrcs/nicehouse/app/acl/internal/biz"
 	"github.com/yrcs/nicehouse/app/acl/internal/biz/do"
+	"github.com/yrcs/nicehouse/pkg/result"
 	"github.com/yrcs/nicehouse/pkg/util"
 	"github.com/yrcs/nicehouse/third_party/common"
 )
@@ -53,17 +54,13 @@ func (s *ACLProvider) ListRoles(ctx context.Context, in *common.PagingRequest) (
 	if v, exists := queryCopy[isSystemKey]; exists {
 		isSystem, err := strconv.ParseBool(v.(string))
 		if err != nil {
-			return nil, util.StatusWithDetails(
-				ctx,
-				biz.ErrRoleInvalidArgument,
-				v1.ErrorReason_ACL_ROLE_INVALID_ARGUMENT.String(),
-				err)
+			return nil, result.ErrorWithDetails(ctx, biz.ErrRoleInvalidArgument, err)
 		}
 		queryCopy[isSystemKey] = isSystem
 	}
 	roles, total, err = s.rc.List(ctx, offset, limit, queryCopy, orderBy)
 	if err != nil {
-		return nil, util.StatusError(ctx, err)
+		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
 	items := make([]*anypb.Any, 0, len(roles))
 	for _, r := range roles {
@@ -88,20 +85,12 @@ func (s *ACLProvider) GetRole(ctx context.Context, in *v1.GetRoleRequest) (*v1.R
 	out, err := s.rc.Get(ctx, "Id = ?", in.Id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, util.StatusWithDetails(
-				ctx,
-				biz.ErrRoleNotFound,
-				v1.ErrorReason_ACL_ROLE_NOT_FOUND.String(),
-				err)
+			return nil, result.ErrorWithDetails(ctx, biz.ErrRoleNotFound, err)
 		}
-		return nil, util.StatusError(ctx, err)
+		result.ErrorWithDetails(ctx, nil, err)
 	}
 	if out.IsSystem {
-		return nil, util.StatusWithDetails(
-			ctx,
-			biz.ErrRoleUnprocessableEntity,
-			v1.ErrorReason_ACL_ROLE_UNPROCESSABLE_ENTITY.String(),
-			err)
+		return nil, result.ErrorWithDetails(ctx, biz.ErrRoleUnprocessableEntity, err)
 	}
 	return &v1.Role{
 		Id:       out.Id,
@@ -112,7 +101,7 @@ func (s *ACLProvider) GetRole(ctx context.Context, in *v1.GetRoleRequest) (*v1.R
 func (s *ACLProvider) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) (*common.CommonCreate, error) {
 	id, err := util.MakeULID()
 	if err != nil {
-		return nil, util.StatusError(ctx, err)
+		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
 	out, err := s.rc.Create(ctx, &do.Role{
 		Id:          id,
@@ -120,7 +109,7 @@ func (s *ACLProvider) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) 
 		Description: in.GetDescription(),
 	})
 	if err != nil {
-		return nil, util.StatusError(ctx, err)
+		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
 	return &common.CommonCreate{
 		Id:        out.Id,
@@ -134,7 +123,7 @@ func (s *ACLProvider) UpdateRole(ctx context.Context, in *v1.UpdateRoleRequest) 
 	util.UpdateOptionalFields(in, values)
 	out, err := s.rc.Update(ctx, values)
 	if err != nil {
-		return nil, util.StatusError(ctx, err)
+		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
 	return &common.CommonUpdate{
 		Id:        out.Id,
@@ -147,7 +136,7 @@ func (s *ACLProvider) DeleteRoles(ctx context.Context, in *common.CommonDeletesR
 		return nil, nil
 	}
 	if err := s.rc.Delete(ctx, in.Ids, "IsSystem = ?", false); err != nil {
-		return nil, util.StatusError(ctx, err)
+		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
 	return nil, nil
 }

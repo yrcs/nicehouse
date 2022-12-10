@@ -11,9 +11,11 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/filter"
 	"dubbo.apache.org/dubbo-go/v3/protocol"
 
-	"github.com/go-kratos/kratos/v2/errors"
-
 	"github.com/mitchellh/mapstructure"
+)
+
+import (
+	myerrors "github.com/yrcs/nicehouse/pkg/errors"
 )
 
 const (
@@ -53,7 +55,7 @@ func (f *validatorFilter) Invoke(ctx context.Context, invoker protocol.Invoker, 
 	if v, ok := req.(validator); ok {
 		if err := v.Validate(); err != nil {
 			return &protocol.RPCResult{
-				Err: errors.BadRequest(reason, err.Error()).
+				Err: myerrors.BadRequest(reason, err.Error()).
 					WithMetadata(map[string]string{
 						"invoker": fmt.Sprintf("%v", invoker),
 						"method":  invocation.MethodName()}).

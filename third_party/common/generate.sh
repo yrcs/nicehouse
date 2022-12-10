@@ -1,1 +1,1 @@
-protoc --proto_path=. --proto_path=../../third_party --go_out=paths=source_relative:. --validate_out=paths=source_relative,lang=go:. --go-triple_out=paths=source_relative:. common.proto
+protoc --proto_path=. --proto_path=../../third_party --go_out=paths=source_relative:. --validate_out=paths=source_relative,lang=go:. common.proto

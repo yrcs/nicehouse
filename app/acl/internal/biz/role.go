@@ -6,16 +6,17 @@ import (
 )
 
 import (
+	v1 "github.com/yrcs/nicehouse/api/acl/v1"
 	"github.com/yrcs/nicehouse/app/acl/internal/biz/do"
 	"github.com/yrcs/nicehouse/app/acl/internal/data/po"
+	myerrors "github.com/yrcs/nicehouse/pkg/errors"
 	"github.com/yrcs/nicehouse/pkg/repo"
-	"github.com/yrcs/nicehouse/pkg/util"
 )
 
 var (
-	ErrRoleInvalidArgument     = util.NewStatus(http.StatusBadRequest, "请求参数错误")
-	ErrRoleNotFound            = util.NewStatus(http.StatusNotFound, "角色未找到")
-	ErrRoleUnprocessableEntity = util.NewStatus(http.StatusUnprocessableEntity, "请求无法处理")
+	ErrRoleInvalidArgument     = myerrors.BadRequest(v1.ErrorReason_ACL_ROLE_INVALID_ARGUMENT.String(), "请求参数错误")
+	ErrRoleNotFound            = myerrors.NotFound(v1.ErrorReason_ACL_ROLE_NOT_FOUND.String(), "角色未找到")
+	ErrRoleUnprocessableEntity = myerrors.New(http.StatusUnprocessableEntity, v1.ErrorReason_ACL_ROLE_UNPROCESSABLE_ENTITY.String(), "请求无法处理")
 )
 
 type E *do.Role

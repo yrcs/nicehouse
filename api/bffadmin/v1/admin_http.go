@@ -44,11 +44,14 @@ func RegisterBFFAdminHTTPServer(r *gin.Engine, srv BFFAdminHTTPServer) {
 // @Description 角色管理分页列表
 // @Accept      json
 // @Produce     json
-// @Param       page        query    int    false "页码"    Format(uint32)
-// @Param       pageSize    query    int    false "每页条目数" Format(uint32)
-// @Param       query[name] query    string false "查询参数"
-// @Param       orderBy[id] query    int    false "排序参数" Enums(0, 1)
-// @Success     200         {object} common.PagingResponse
+// @Param       page               query    int    false "页码"    Format(uint32)
+// @Param       pageSize           query    int    false "每页条目数" Format(uint32)
+// @Param       query[Name]        query    string false "名称"
+// @Param       query[Description] query    string false "描述"
+// @Param       query[IsSystem]    query    bool   false "是否内置"
+// @Param       orderBy[Name]      query    int    false "按名称排序"   Enums(0, 1)
+// @Param       orderBy[Id]        query    int    false "按 ID 排序" Enums(0, 1)
+// @Success     200                {object} common.PagingResponse
 // @Router      /admin/roles [get]
 func ListRolesHandler(srv BFFAdminHTTPServer) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
