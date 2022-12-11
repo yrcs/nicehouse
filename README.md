@@ -6,7 +6,7 @@ Nicehouse 是一个开源房产管理服务平台，开放聚合线上线下房�
 #### 软件架构
 本项目结合 Go Workspace、Go Module 以及 Makefile 共同组成 Monorepo 项目结构，所有服务 / 模块共享一个 go.mod。每个服务参考 [kratos-layout](https://go-kratos.gitee.io/blog/go-project-layout) 均采用整洁架构分为 3 层：service (DDD application)、biz (DDD domain)、data (DDD repository)，各层之间采用 [wire 依赖注入](https://go-kratos.gitee.io/blog/go-project-wire)。其中 biz 与 data 之间运用了依赖倒置原则，这样不仅消除了 repo 与 DO (Domain Object) 的耦合，同时也避免了出现 Go package 循环引用。
 
-| 现阶段采用的主要开源技术产品                                 |
+| 现阶段采用的主要开源技术库 / 产品                            |
 | ------------------------------------------------------------ |
 | 微服务框架：Dubbo-Go (Triple协议)　　　　　　　　　配置中心 / 注册中心：Nacos |
 | SQL 数据库：MariaDB　　　　　　　　　　　　　　　ORM   框架：GORM |
@@ -81,6 +81,10 @@ data 存储层：
 
 1. 在项目根目录执行的 `make xxx` 命令针对所有模块，而在 `app/xxx` 目录下执行的 `make xxx` 命令只针对该 `xxx` 模块。可以执行 `make help` 列出所有命令。
 2. 执行 `make init` 后就可以使用 `imports-formatter` 格式化 Go 源码中的 imports 块了。只需在项目根目录下执行 `imports-formatter ./...` 还可以将该工具集成到 Goland 中，参见 [Goland 使用 imports-formatter 工具快速速格式化 import 代码块](https://xie.infoq.cn/article/e9e229f7c468026e9ce17af25)。执行完后再看看源码变化 ^_^
+
+#### 下一阶段
+
+集成 casbin 完成权限管理
 
 #### **参与贡献**
 
