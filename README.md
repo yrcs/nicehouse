@@ -62,8 +62,8 @@ Goland 还需添加额外配置项：
 
 api 接口服务层（用于定义 DTO 对象和 rpc 接口）：
 
-	1. 定义 proto 文件并执行 `make proto-gen` 生成 *.pb.go 文件；
-	1. 定义 xxx_http.go 路由文件并在里面定义各 http 请求方法路由（没有 http 服务需求则不需要定义该文件）。
+1. 定义 proto 文件并执行 `make proto-gen` 生成 *.pb.go 文件；
+2. 定义 xxx_http.go 路由文件并在里面定义各 http 请求方法路由（没有 http 服务需求则不需要定义该文件）。
 
 biz 业务逻辑层：
 
