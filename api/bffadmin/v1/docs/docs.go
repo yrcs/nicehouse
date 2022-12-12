@@ -50,8 +50,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "查询参数",
-                        "name": "query[name]",
+                        "description": "名称",
+                        "name": "query[Name]",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "query[Description]",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否内置",
+                        "name": "query[IsSystem]",
                         "in": "query"
                     },
                     {
@@ -60,8 +72,18 @@ const docTemplate = `{
                             1
                         ],
                         "type": "integer",
-                        "description": "排序参数",
-                        "name": "orderBy[id]",
+                        "description": "按名称排序",
+                        "name": "orderBy[Name]",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1
+                        ],
+                        "type": "integer",
+                        "description": "按 ID 排序",
+                        "name": "orderBy[Id]",
                         "in": "query"
                     }
                 ],

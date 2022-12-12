@@ -154,16 +154,31 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 查询参数
+      - description: 名称
         in: query
-        name: query[name]
+        name: query[Name]
         type: string
-      - description: 排序参数
+      - description: 描述
+        in: query
+        name: query[Description]
+        type: string
+      - description: 是否内置
+        in: query
+        name: query[IsSystem]
+        type: boolean
+      - description: 按名称排序
         enum:
         - 0
         - 1
         in: query
-        name: orderBy[id]
+        name: orderBy[Name]
+        type: integer
+      - description: 按 ID 排序
+        enum:
+        - 0
+        - 1
+        in: query
+        name: orderBy[Id]
         type: integer
       produces:
       - application/json
