@@ -17,7 +17,7 @@ import (
 	"github.com/yrcs/nicehouse/pkg/util"
 )
 
-type Base struct {
+type BasePO struct {
 	Id        string                 `gorm:"type:varchar(26);primaryKey;comment:分布式全局唯一 ULID"`
 	CreatedAt time.Time              `gorm:"type:datetime not null;comment:创建时间"`
 	UpdatedAt time.Time              `gorm:"type:datetime not null;comment:更新时间"`

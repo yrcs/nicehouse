@@ -58,7 +58,7 @@ func (s *ACLProvider) ListRoles(ctx context.Context, in *common.PagingRequest) (
 		}
 		queryCopy[isSystemKey] = isSystem
 	}
-	roles, total, err = s.rc.List(ctx, offset, limit, queryCopy, orderBy)
+	roles, total, err = s.rc.ListByPage(ctx, offset, limit, queryCopy, orderBy)
 	if err != nil {
 		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
@@ -121,7 +121,7 @@ func (s *ACLProvider) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) 
 func (s *ACLProvider) UpdateRole(ctx context.Context, in *v1.UpdateRoleRequest) (*common.CommonUpdate, error) {
 	values := make(map[string]any, 3)
 	util.UpdateOptionalFields(in, values)
-	out, err := s.rc.Update(ctx, values)
+	out, err := s.rc.Updates(ctx, values)
 	if err != nil {
 		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}

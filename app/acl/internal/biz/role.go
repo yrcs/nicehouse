@@ -1,7 +1,6 @@
 package biz
 
 import (
-	"context"
 	"net/http"
 )
 
@@ -11,6 +10,7 @@ import (
 	"github.com/yrcs/nicehouse/app/acl/internal/data/po"
 	myerrors "github.com/yrcs/nicehouse/pkg/errors"
 	"github.com/yrcs/nicehouse/pkg/repo"
+	"github.com/yrcs/nicehouse/pkg/usecase"
 )
 
 var (
@@ -27,38 +27,13 @@ type RoleRepo interface {
 }
 
 type RoleUsecase struct {
+	usecase.BaseUsecase[E, T]
 	repo RoleRepo
 }
 
 func NewRoleUsecase(repo RoleRepo) *RoleUsecase {
-	return &RoleUsecase{repo: repo}
-}
-
-func (c *RoleUsecase) List(ctx context.Context, offset int, limit int, conds map[string]any, orderBy map[string]string) ([]E, int, error) {
-	return c.repo.FindByPage(ctx, offset, limit, conds, orderBy)
-}
-
-func (c *RoleUsecase) Get(ctx context.Context, conds ...any) (E, error) {
-	return c.repo.FindOne(ctx, conds)
-}
-
-func (c *RoleUsecase) Create(ctx context.Context, o E) (E, error) {
-	if err := c.repo.Create(ctx, o); err != nil {
-		return nil, err
+	return &RoleUsecase{
+		BaseUsecase: usecase.BaseUsecase[E, T]{repo},
+		repo:        repo,
 	}
-	return o, nil
-}
-
-func (c *RoleUsecase) Update(ctx context.Context, values map[string]any) (E, error) {
-	id := values["Id"]
-	delete(values, "Id")
-	o, err := c.repo.Updates(ctx, values, "id = ?", id)
-	if err != nil {
-		return nil, err
-	}
-	return o, nil
-}
-
-func (c *RoleUsecase) Delete(ctx context.Context, ids []string, query any, conds ...any) error {
-	return c.repo.Delete(ctx, ids, query, conds...)
 }
