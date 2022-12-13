@@ -21,6 +21,7 @@ import (
 	"github.com/yrcs/nicehouse/app/acl/internal/biz"
 	"github.com/yrcs/nicehouse/app/acl/internal/biz/do"
 	"github.com/yrcs/nicehouse/pkg/result"
+	"github.com/yrcs/nicehouse/pkg/usecase"
 	"github.com/yrcs/nicehouse/pkg/util"
 	"github.com/yrcs/nicehouse/third_party/common"
 )
@@ -104,7 +105,7 @@ func (s *ACLProvider) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) 
 		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}
 	out, err := s.rc.Create(ctx, &do.Role{
-		Id:          id,
+		BaseDO:      usecase.BaseDO{Id: id},
 		Name:        in.Name,
 		Description: in.GetDescription(),
 	})

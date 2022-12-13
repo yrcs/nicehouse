@@ -7,6 +7,7 @@ import (
 import (
 	aclv1 "github.com/yrcs/nicehouse/api/acl/v1"
 	"github.com/yrcs/nicehouse/app/bffadmin/internal/biz"
+	"github.com/yrcs/nicehouse/pkg/usecase"
 	"github.com/yrcs/nicehouse/third_party/common"
 )
 
@@ -34,7 +35,7 @@ func (r *aclRepo) GetRole(ctx context.Context, o *biz.Role) (*biz.Role, error) {
 		return nil, err
 	}
 	return &biz.Role{
-		Id:       out.Id,
+		BaseDO:   usecase.BaseDO{Id: out.Id},
 		IsSystem: out.IsSystem,
 	}, err
 }
@@ -48,9 +49,11 @@ func (r *aclRepo) CreateRole(ctx context.Context, o *biz.Role) (*biz.Role, error
 		return nil, err
 	}
 	return &biz.Role{
-		Id:        out.Id,
-		CreatedAt: out.CreatedAt.AsTime(),
-		UpdatedAt: out.GetUpdatedAt().AsTime(),
+		BaseDO: usecase.BaseDO{
+			Id:        out.Id,
+			CreatedAt: out.CreatedAt.AsTime(),
+			UpdatedAt: out.GetUpdatedAt().AsTime(),
+		},
 	}, err
 }
 
@@ -64,8 +67,10 @@ func (r *aclRepo) UpdateRole(ctx context.Context, o *biz.Role) (*biz.Role, error
 		return nil, err
 	}
 	return &biz.Role{
-		Id:        out.Id,
-		UpdatedAt: out.GetUpdatedAt().AsTime(),
+		BaseDO: usecase.BaseDO{
+			Id:        out.Id,
+			UpdatedAt: out.GetUpdatedAt().AsTime(),
+		},
 	}, err
 }
 

@@ -2,17 +2,15 @@ package biz
 
 import (
 	"context"
-	"time"
 )
 
 import (
+	"github.com/yrcs/nicehouse/pkg/usecase"
 	"github.com/yrcs/nicehouse/third_party/common"
 )
 
 type Role struct {
-	Id          string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	usecase.BaseDO
 	Name        *string
 	Description *string
 	IsSystem    bool

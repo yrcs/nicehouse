@@ -1,13 +1,11 @@
 package do
 
 import (
-	"time"
+	"github.com/yrcs/nicehouse/pkg/usecase"
 )
 
 type Role struct {
-	Id          string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	usecase.BaseDO
 	Name        string
 	Description string
 	IsSystem    bool

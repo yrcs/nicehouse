@@ -12,6 +12,7 @@ import (
 import (
 	v1 "github.com/yrcs/nicehouse/api/bffadmin/v1"
 	"github.com/yrcs/nicehouse/app/bffadmin/internal/biz"
+	"github.com/yrcs/nicehouse/pkg/usecase"
 	"github.com/yrcs/nicehouse/third_party/common"
 )
 
@@ -24,7 +25,7 @@ func (s *BFFAdmin) ListRoles(ctx context.Context, in *common.PagingRequest) (*co
 }
 
 func (s *BFFAdmin) GetRole(ctx context.Context, in *v1.GetRoleRequest) (*v1.Role, error) {
-	out, err := s.ac.GetRole(ctx, &biz.Role{Id: in.Id})
+	out, err := s.ac.GetRole(ctx, &biz.Role{BaseDO: usecase.BaseDO{Id: in.Id}})
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +52,7 @@ func (s *BFFAdmin) CreateRole(ctx context.Context, in *v1.CreateRoleRequest) (*c
 
 func (s *BFFAdmin) UpdateRole(ctx context.Context, in *v1.UpdateRoleRequest) (*common.CommonUpdate, error) {
 	out, err := s.ac.UpdateRole(ctx, &biz.Role{
-		Id:          in.Id,
+		BaseDO:      usecase.BaseDO{Id: in.Id},
 		Name:        in.Name,
 		Description: in.Description,
 	})
