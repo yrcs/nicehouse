@@ -158,14 +158,6 @@ paths:
         in: query
         name: query[Name]
         type: string
-      - description: 描述
-        in: query
-        name: query[Description]
-        type: string
-      - description: 是否内置
-        in: query
-        name: query[IsSystem]
-        type: boolean
       - description: 按名称排序
         enum:
         - 0

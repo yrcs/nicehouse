@@ -3,12 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	"strconv"
 )
 
 import (
-	"github.com/jinzhu/copier"
-
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -20,46 +17,21 @@ import (
 	v1 "github.com/yrcs/nicehouse/api/acl/v1"
 	"github.com/yrcs/nicehouse/app/acl/internal/biz"
 	"github.com/yrcs/nicehouse/app/acl/internal/biz/do"
+	"github.com/yrcs/nicehouse/pkg/pagination"
 	"github.com/yrcs/nicehouse/pkg/result"
 	"github.com/yrcs/nicehouse/pkg/usecase"
 	"github.com/yrcs/nicehouse/pkg/util"
 	"github.com/yrcs/nicehouse/third_party/common"
 )
 
-const maxPageSize = 1000
-
 func (s *ACLProvider) ListRoles(ctx context.Context, in *common.PagingRequest) (*common.PagingResponse, error) {
-	limit := int(in.GetPageSize())
-	if limit == 0 || limit > maxPageSize {
-		limit = maxPageSize
-	}
-
-	offset := int(in.GetPage())
-	if offset > 0 {
-		offset = (offset - 1) * limit
-	}
-
-	orderBy := make(map[string]string, len(in.OrderBy))
-	for k, v := range in.OrderBy {
-		orderBy[k] = common.Order_name[int32(v.Number())]
-	}
-
+	offset, limit, orderBy := pagination.GetPagingParams(in.GetPage(), in.GetPageSize(), in.OrderBy)
 	var (
-		queryCopy map[string]any
-		roles     []biz.E
-		total     int
-		err       error
+		roles []biz.E
+		total int
+		err   error
 	)
-	copier.Copy(&queryCopy, in.GetQuery())
-	isSystemKey := "IsSystem"
-	if v, exists := queryCopy[isSystemKey]; exists {
-		isSystem, err := strconv.ParseBool(v.(string))
-		if err != nil {
-			return nil, result.ErrorWithDetails(ctx, biz.ErrRoleInvalidArgument, err)
-		}
-		queryCopy[isSystemKey] = isSystem
-	}
-	roles, total, err = s.rc.ListByPage(ctx, offset, limit, queryCopy, orderBy)
+	roles, total, err = s.rc.ListByPage(ctx, offset, limit, orderBy, "Name LIKE ?", "%"+in.Query["Name"]+"%")
 	if err != nil {
 		return nil, result.ErrorWithDetails(ctx, nil, err)
 	}

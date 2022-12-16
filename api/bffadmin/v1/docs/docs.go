@@ -55,18 +55,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "描述",
-                        "name": "query[Description]",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否内置",
-                        "name": "query[IsSystem]",
-                        "in": "query"
-                    },
-                    {
                         "enum": [
                             0,
                             1

@@ -21,17 +21,17 @@ enum Order {
 
 // 分页通用请求
 message PagingRequest {
-  // 当前页
+  // 页码
   optional uint32 page = 1 [(validate.rules).uint32.gte = 1];
 
-  // 每一页的行数
+  // 每页条目数
   optional uint32 pageSize = 2 [(validate.rules).uint32 = {gte: 1, lte: 1000}];
 
   // 查询参数
   map<string, string> query = 3 [(validate.rules).map = {ignore_empty: true, keys: {string: {min_len: 1}}, values: {string: {min_len: 1}}}];
 
   // 排序
-  map<string, Order> orderBy = 4 [(validate.rules).map = {ignore_empty: true, keys: {string: {min_len: 1}}, values: {enum: {defined_only: true, in: [0, 1]}}}];
+  map<string, Order> orderBy = 5 [(validate.rules).map = {ignore_empty: true, keys: {string: {min_len: 1}}, values: {enum: {defined_only: true, in: [0,1]}}}];
 }
 
 // 分页通用结果

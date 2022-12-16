@@ -1,4 +1,4 @@
-package util
+package pagination
 
 import (
 	"strconv"
@@ -11,6 +11,8 @@ import (
 import (
 	"github.com/yrcs/nicehouse/third_party/common"
 )
+
+const maxPageSize = 1000
 
 func PackPagingData(ctx *gin.Context, req *common.PagingRequest) {
 	pInt, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
@@ -33,4 +35,20 @@ func PackPagingData(ctx *gin.Context, req *common.PagingRequest) {
 			req.OrderBy[k] = common.Order_ASC
 		}
 	}
+}
+
+func GetPagingParams(page, pageSize uint32, order map[string]common.Order) (offset, limit int, orderBy map[string]string) {
+	limit = int(pageSize)
+	if limit == 0 || limit > maxPageSize {
+		limit = maxPageSize
+	}
+	offset = int(page)
+	if offset > 0 {
+		offset = (offset - 1) * limit
+	}
+	orderBy = make(map[string]string, len(order))
+	for k, v := range order {
+		orderBy[k] = common.Order_name[int32(v.Number())]
+	}
+	return
 }
