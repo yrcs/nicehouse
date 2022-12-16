@@ -27,9 +27,9 @@ type BasePO struct {
 
 type Repo[E, T any] interface {
 	Create(ctx context.Context, value any) error
-	FindOne(ctx context.Context, conds ...any) (E, error)
-	Find(ctx context.Context, conds ...any) ([]E, error)
-	FindByPage(ctx context.Context, offset int, limit int, conds map[string]any, orderBy map[string]string) ([]E, int, error)
+	FindOne(ctx context.Context, query any, conds ...any) (E, error)
+	Find(ctx context.Context, query any, conds ...any) ([]E, error)
+	FindByPage(ctx context.Context, offset int, limit int, orderBy map[string]string, query any, conds ...any) ([]E, int, error)
 	Update(ctx context.Context, column string, value any, conds ...any) (E, error)
 	Updates(ctx context.Context, values map[string]any, query any, conds ...any) (E, error)
 	Delete(ctx context.Context, ids []string, query any, conds ...any) error
@@ -45,13 +45,13 @@ func (r *BaseRepo[E, T]) Create(ctx context.Context, value any) error {
 	return r.DB.WithContext(ctx).Create(value).Error
 }
 
-func (r *BaseRepo[E, T]) FindOne(ctx context.Context, conds ...any) (E, error) {
+func (r *BaseRepo[E, T]) FindOne(ctx context.Context, query any, conds ...any) (E, error) {
 	var (
 		po T
 		do E
 	)
 
-	if err := r.DB.WithContext(ctx).First(&po, conds...).Error; err != nil {
+	if err := r.DB.WithContext(ctx).Where(query, conds...).First(&po).Error; err != nil {
 		return do, err
 	}
 
@@ -60,9 +60,9 @@ func (r *BaseRepo[E, T]) FindOne(ctx context.Context, conds ...any) (E, error) {
 	return do, nil
 }
 
-func (r *BaseRepo[E, T]) Find(ctx context.Context, conds ...any) ([]E, error) {
+func (r *BaseRepo[E, T]) Find(ctx context.Context, query any, conds ...any) ([]E, error) {
 	var pos []T
-	if err := r.DB.WithContext(ctx).Find(&pos, conds...).Error; err != nil {
+	if err := r.DB.WithContext(ctx).Where(query, conds...).Find(&pos).Error; err != nil {
 		return nil, err
 	}
 
@@ -71,16 +71,15 @@ func (r *BaseRepo[E, T]) Find(ctx context.Context, conds ...any) ([]E, error) {
 	return dos, nil
 }
 
-func (r *BaseRepo[E, T]) FindByPage(ctx context.Context, offset int, limit int, conds map[string]any, orderBy map[string]string) ([]E, int, error) {
+func (r *BaseRepo[E, T]) FindByPage(ctx context.Context, offset int, limit int, orderBy map[string]string, query any, conds ...any) ([]E, int, error) {
 	var pos []T
-	tx := r.DB.WithContext(ctx).Where(conds)
+	tx := r.DB.WithContext(ctx).Where(query, conds...)
 	total := int(tx.Find(&pos).RowsAffected)
 
 	for k, v := range orderBy {
 		tx = tx.Order(k + " " + v)
 	}
-	err := tx.Offset(offset).Limit(limit).Find(&pos).Error
-	if err != nil {
+	if err := tx.Offset(offset).Limit(limit).Find(&pos).Error; err != nil {
 		return nil, 0, err
 	}
 

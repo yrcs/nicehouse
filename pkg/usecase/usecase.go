@@ -11,9 +11,9 @@ import (
 
 type Usecase interface {
 	Create(ctx context.Context, o E) (E, error)
-	Get(ctx context.Context, conds ...any) (E, error)
-	List(ctx context.Context, conds ...any) ([]E, error)
-	ListByPage(ctx context.Context, offset int, limit int, conds map[string]any, orderBy map[string]string) ([]E, int, error)
+	Get(ctx context.Context, query any, conds ...any) (E, error)
+	List(ctx context.Context, query any, conds ...any) ([]E, error)
+	ListByPage(ctx context.Context, offset int, limit int, orderBy map[string]string, query any, conds ...any) ([]E, int, error)
 	Update(ctx context.Context, column string, value any, conds ...any) (E, error)
 	Updates(ctx context.Context, values map[string]any) (E, error)
 	Delete(ctx context.Context, ids []string, query any, conds ...any) error
@@ -42,16 +42,16 @@ func (c *BaseUsecase[E, T]) Create(ctx context.Context, o E) (E, error) {
 	return o, nil
 }
 
-func (c *BaseUsecase[E, T]) Get(ctx context.Context, conds ...any) (E, error) {
-	return c.Repo.FindOne(ctx, conds)
+func (c *BaseUsecase[E, T]) Get(ctx context.Context, query any, conds ...any) (E, error) {
+	return c.Repo.FindOne(ctx, query, conds)
 }
 
-func (c *BaseUsecase[E, T]) List(ctx context.Context, conds ...any) ([]E, error) {
-	return c.Repo.Find(ctx, conds)
+func (c *BaseUsecase[E, T]) List(ctx context.Context, query any, conds ...any) ([]E, error) {
+	return c.Repo.Find(ctx, query, conds)
 }
 
-func (c *BaseUsecase[E, T]) ListByPage(ctx context.Context, offset int, limit int, conds map[string]any, orderBy map[string]string) ([]E, int, error) {
-	return c.Repo.FindByPage(ctx, offset, limit, conds, orderBy)
+func (c *BaseUsecase[E, T]) ListByPage(ctx context.Context, offset int, limit int, orderBy map[string]string, query any, conds ...any) ([]E, int, error) {
+	return c.Repo.FindByPage(ctx, offset, limit, orderBy, query, conds)
 }
 
 func (c *BaseUsecase[E, T]) Update(ctx context.Context, column string, value any, conds ...any) (E, error) {
